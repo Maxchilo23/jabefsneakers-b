@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique @db.VarChar(50)
+  slug      String     @unique @db.VarChar(50)
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+model Producto {
+  id              Int              @id @default(autoincrement())
+  nombre          String           @db.VarChar(150)
+  descripcion     String?          @db.Text
+  precio          Decimal          @db.Decimal(10, 2)
+  stock           Int              @default(0)
+  destacado       Boolean          @default(false)
+  activo          Boolean          @default(true)
+  imagenPrincipal String?          @db.VarChar(500)
+  categoriaId     Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  detallePedido   DetallePedido[]
+  imagenes        ProductoImagen[]
+  tallas          ProductoTalla[]
+  categoria       Categoria        @relation(fields: [categoriaId], references: [id])
+
+  @@index([categoriaId])
+  @@map("productos")
+}
+
+model ProductoImagen {
+  id         Int      @id @default(autoincrement())
+  url        String   @db.VarChar(500)
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+
+  @@index([productoId])
+  @@map("producto_imagenes")
+}
+
+model Talla {
+  id             Int             @id @default(autoincrement())
+  valor          String          @db.VarChar(10)
+  productoTallas ProductoTalla[]
+
+  @@map("tallas")
+}
+
+model ProductoTalla {
+  id         Int      @id @default(autoincrement())
+  productoId Int
+  tallaId    Int
+  stock      Int      @default(0)
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  talla      Talla    @relation(fields: [tallaId], references: [id])
+
+  @@unique([productoId, tallaId])
+  @@index([tallaId], map: "producto_tallas_tallaId_fkey")
+  @@map("producto_tallas")
+}
+
+model Pedido {
+  id              Int             @id @default(autoincrement())
+  clienteNombre   String          @db.VarChar(150)
+  clienteTelefono String          @db.VarChar(20)
+  total           Decimal         @db.Decimal(10, 2)
+  estado          EstadoPedido    @default(PENDIENTE)
+  createdAt       DateTime        @default(now())
+  detalles        DetallePedido[]
+
+  @@map("pedidos")
+}
+
+model DetallePedido {
+  id             Int      @id @default(autoincrement())
+  pedidoId       Int
+  productoId     Int
+  tallaTexto     String   @db.VarChar(10)
+  cantidad       Int
+  precioUnitario Decimal  @db.Decimal(10, 2)
+  pedido         Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  producto       Producto @relation(fields: [productoId], references: [id])
+
+  @@index([pedidoId])
+  @@index([productoId], map: "detalle_pedidos_productoId_fkey")
+  @@map("detalle_pedidos")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  usuario  String @unique @db.VarChar(50)
+  password String @db.VarChar(255)
+
+  @@map("admins")
+}
+
+enum EstadoPedido {
+  PENDIENTE
+  CONTACTADO
+  COMPLETADO
+  CANCELADO
+}
