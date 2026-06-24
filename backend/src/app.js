@@ -15,7 +15,7 @@ const app = express();
 const corsOptions = {
   origin: [
     'http://localhost:5173',
-    'https://jabefsneakers-b.vercel.app', // tu URL real de Vercel
+    'https://jabefsneakers-b.vercel.app',
   ],
   credentials: true,
 };
