@@ -12,6 +12,15 @@ const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
+const corsOptions = {
+  origin: [
+    'http://localhost:5173', // desarrollo local
+    'https://tu-dominio-frontend.vercel.app', // lo agregamos cuando tengamos la URL de Vercel
+  ],
+  credentials: true,
+};
+
+
 // Middlewares globales
 app.use(cors());
 app.use(express.json());
@@ -29,8 +38,10 @@ app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/tallas', tallaRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use(cors(corsOptions));
 
 // Middleware de errores (siempre al final)
 app.use(errorHandler);
 
 module.exports = app;
+
