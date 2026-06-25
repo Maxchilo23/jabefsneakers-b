@@ -1,0 +1,62 @@
+.page {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 2rem;
+  color: var(--color-ink);
+}
+
+.search {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.75rem 0;
+  font-family: var(--font-body);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  margin-bottom: 1.5rem;
+}
+
+.search::placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.search:focus {
+  outline: none;
+  border-bottom-color: var(--color-ink);
+}
+
+.filters {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.filterBtn {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.45);
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.filterBtnActive {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-ink);
+}

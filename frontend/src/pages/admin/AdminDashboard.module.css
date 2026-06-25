@@ -1,0 +1,112 @@
+.page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+  color: var(--color-ink);
+}
+
+.logout {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wide);
+  font-size: 0.78rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.logout:hover {
+  color: #8a1f1f;
+}
+
+.tabs {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 2rem;
+}
+
+.tab {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.45);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid transparent;
+}
+
+.tabActive {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-ink);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.3rem;
+  color: var(--color-ink);
+}
+
+.addBtn {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+  padding: 0.75rem 1.25rem;
+}
+
+.categoriasGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.categoriaCard {
+  border: 1px solid var(--color-line);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categoriaNombre {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+}
+
+.categoriaSlug {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+@media (min-width: 768px) {
+  .categoriasGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -1,25 +1,24 @@
 import { formatearPrecio } from '../../utils/formatearPrecio';
+import styles from './ProductoCard.module.css';
 
-function ProductoCard({ producto, onVerDetalle }) {
+function ProductoCard({ producto, onVerDetalle, index = 0 }) {
   return (
-    <div
-      onClick={() => onVerDetalle(producto)}
-      className="bg-gray-800 rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform"
-    >
-      <div className="aspect-square bg-gray-700 overflow-hidden">
+    <div className={styles.card} onClick={() => onVerDetalle(producto)}>
+      <div className={styles.imageWrap}>
         <img
           src={producto.imagenPrincipal || 'https://via.placeholder.com/400'}
           alt={producto.nombre}
-          className="w-full h-full object-cover"
+          className={styles.image}
         />
       </div>
-      <div className="p-4">
-        <p className="text-xs text-orange-500 uppercase font-semibold">
-          {producto.categoria?.nombre}
-        </p>
-        <h3 className="text-white font-semibold mt-1 line-clamp-2">{producto.nombre}</h3>
-        <p className="text-gray-300 mt-2 font-bold">{formatearPrecio(producto.precio)}</p>
+
+      <div className={styles.meta}>
+        <span className={styles.category}>{producto.categoria?.nombre}</span>
+        <span className={styles.index}>Nº {String(index + 1).padStart(2, '0')}</span>
       </div>
+
+      <h3 className={styles.name}>{producto.nombre}</h3>
+      <p className={styles.price}>{formatearPrecio(producto.precio)}</p>
     </div>
   );
 }

@@ -1,0 +1,36 @@
+.page {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.code {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 5rem;
+  color: var(--color-ink);
+  line-height: 1;
+}
+
+.msg {
+  font-family: var(--font-body);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+  color: rgba(0, 0, 0, 0.55);
+  margin: 1rem 0 2rem;
+}
+
+.cta {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+  padding: 0.9rem 2rem;
+}

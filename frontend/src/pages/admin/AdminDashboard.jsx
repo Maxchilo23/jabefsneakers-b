@@ -2,13 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cerrarSesion } from '../../services/auth.service';
 import { obtenerProductos } from '../../services/producto.service';
+import { obtenerCategorias } from '../../services/categoria.service';
 import { eliminarProducto } from '../../services/admin.service';
 import ProductoForm from '../../components/admin/ProductoForm';
 import ProductoTabla from '../../components/admin/ProductoTabla';
+import CategoriaForm from '../../components/admin/CategoriaForm';
+import Loader from '../../components/ui/Loader';
+import styles from './AdminDashboard.module.css';
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const [pestanaActiva, setPestanaActiva] = useState('productos');
+
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -20,8 +27,14 @@ function AdminDashboard() {
     setCargando(false);
   }
 
+  async function cargarCategorias() {
+    const data = await obtenerCategorias();
+    setCategorias(data);
+  }
+
   useEffect(() => {
     cargarProductos();
+    cargarCategorias();
   }, []);
 
   function handleLogout() {
@@ -40,7 +53,7 @@ function AdminDashboard() {
   }
 
   async function handleEliminar(id) {
-    if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
+    if (!confirm('¿Eliminar este producto?')) return;
     try {
       await eliminarProducto(id);
       cargarProductos();
@@ -57,44 +70,71 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-white">Panel de Administración</h1>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Panel de administración</h1>
+        <button onClick={handleLogout} className={styles.logout}>Cerrar sesión</button>
+      </div>
+
+      <div className={styles.tabs}>
         <button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+          onClick={() => setPestanaActiva('productos')}
+          className={`${styles.tab} ${pestanaActiva === 'productos' ? styles.tabActive : ''}`}
         >
-          Cerrar sesión
+          Productos
+        </button>
+        <button
+          onClick={() => setPestanaActiva('categorias')}
+          className={`${styles.tab} ${pestanaActiva === 'categorias' ? styles.tabActive : ''}`}
+        >
+          Categorías
         </button>
       </div>
 
-      {mostrarForm ? (
-        <ProductoForm
-          productoEditar={productoEditar}
-          onGuardado={handleGuardado}
-          onCancelar={() => setMostrarForm(false)}
-        />
-      ) : (
+      {pestanaActiva === 'productos' && (
         <>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-white">Productos</h2>
-            <button
-              onClick={handleNuevoProducto}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold"
-            >
-              + Nuevo producto
-            </button>
-          </div>
-
-          {cargando ? (
-            <p className="text-gray-400 text-center py-8">Cargando productos...</p>
-          ) : (
-            <ProductoTabla
-              productos={productos}
-              onEditar={handleEditar}
-              onEliminar={handleEliminar}
+          {mostrarForm ? (
+            <ProductoForm
+              productoEditar={productoEditar}
+              onGuardado={handleGuardado}
+              onCancelar={() => setMostrarForm(false)}
             />
+          ) : (
+            <>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>Productos</h2>
+                <button onClick={handleNuevoProducto} className={styles.addBtn}>
+                  + Nuevo producto
+                </button>
+              </div>
+
+              {cargando ? (
+                <Loader texto="Cargando productos..." />
+              ) : (
+                <ProductoTabla
+                  productos={productos}
+                  onEditar={handleEditar}
+                  onEliminar={handleEliminar}
+                />
+              )}
+            </>
           )}
+        </>
+      )}
+
+      {pestanaActiva === 'categorias' && (
+        <>
+          <h2 className={styles.sectionTitle} style={{ marginBottom: '1.25rem' }}>Categorías</h2>
+          <CategoriaForm onGuardado={cargarCategorias} />
+
+          <div className={styles.categoriasGrid}>
+            {categorias.map((cat) => (
+              <div key={cat.id} className={styles.categoriaCard}>
+                <span className={styles.categoriaNombre}>{cat.nombre}</span>
+                <span className={styles.categoriaSlug}>{cat.slug}</span>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

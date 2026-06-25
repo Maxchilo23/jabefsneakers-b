@@ -4,9 +4,8 @@ import { obtenerProductos } from '../services/producto.service';
 import { obtenerCategorias } from '../services/categoria.service';
 import { obtenerTallas } from '../services/talla.service';
 import ProductoGrid from '../components/catalogo/ProductoGrid';
-import Buscador from '../components/catalogo/Buscador';
-import FiltroTalla from '../components/catalogo/FiltroTalla';
 import Loader from '../components/ui/Loader';
+import styles from './Catalogo.module.css';
 
 function Catalogo() {
   const [productos, setProductos] = useState([]);
@@ -25,10 +24,8 @@ function Catalogo() {
     obtenerTallas().then(setTallas).catch(console.error);
   }, []);
 
-  // Debounce de la búsqueda (espera 400ms después de que el usuario deja de escribir)
   useEffect(() => {
     const categoriaSeleccionada = categorias.find((c) => c.slug === categoriaSlug);
-
     const timeout = setTimeout(() => {
       setCargando(true);
       obtenerProductos({
@@ -40,7 +37,6 @@ function Catalogo() {
         .catch(console.error)
         .finally(() => setCargando(false));
     }, 400);
-
     return () => clearTimeout(timeout);
   }, [categoriaSlug, categorias, busqueda, tallaActiva]);
 
@@ -63,19 +59,21 @@ function Catalogo() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-white mb-6">Catálogo</h1>
+    <div className={styles.page}>
+      <h1 className={styles.title}>Catálogo</h1>
 
-      <Buscador valor={busqueda} onCambiar={setBusqueda} />
+      <input
+        type="text"
+        placeholder="Buscar producto..."
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+        className={styles.search}
+      />
 
-      <div className="flex gap-3 mb-4 overflow-x-auto pb-2">
+      <div className={styles.filters}>
         <button
           onClick={() => handleCambiarCategoria('')}
-          className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-            !categoriaSlug
-              ? 'bg-orange-500 text-white'
-              : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-          }`}
+          className={`${styles.filterBtn} ${!categoriaSlug ? styles.filterBtnActive : ''}`}
         >
           Todos
         </button>
@@ -83,28 +81,36 @@ function Catalogo() {
           <button
             key={cat.id}
             onClick={() => handleCambiarCategoria(cat.slug)}
-            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-              categoriaSlug === cat.slug
-                ? 'bg-orange-500 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-            }`}
+            className={`${styles.filterBtn} ${categoriaSlug === cat.slug ? styles.filterBtnActive : ''}`}
           >
             {cat.nombre}
           </button>
         ))}
       </div>
 
-      <FiltroTalla
-        tallas={tallas}
-        tallaActiva={tallaActiva}
-        onSeleccionar={handleCambiarTalla}
-      />
+      <div className={styles.filters}>
+        <button
+          onClick={() => handleCambiarTalla('')}
+          className={`${styles.filterBtn} ${!tallaActiva ? styles.filterBtnActive : ''}`}
+        >
+          Todas las tallas
+        </button>
+        {tallas.map((talla) => (
+          <button
+            key={talla.id}
+            onClick={() => handleCambiarTalla(talla.valor)}
+            className={`${styles.filterBtn} ${tallaActiva === talla.valor ? styles.filterBtnActive : ''}`}
+          >
+            {talla.valor}
+          </button>
+        ))}
+      </div>
 
       {cargando ? (
-  <Loader texto="Cargando productos..." />
-) : (
-  <ProductoGrid productos={productos} onVerDetalle={handleVerDetalle} />
-)}
+        <Loader texto="Cargando productos..." />
+      ) : (
+        <ProductoGrid productos={productos} onVerDetalle={handleVerDetalle} />
+      )}
     </div>
   );
 }

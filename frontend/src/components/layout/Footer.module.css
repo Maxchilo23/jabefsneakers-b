@@ -1,0 +1,28 @@
+.footer {
+  border-top: 1px solid var(--color-line);
+  padding: 2.5rem 1.5rem 3rem;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  color: var(--color-ink);
+}
+
+.copy {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.5);
+}

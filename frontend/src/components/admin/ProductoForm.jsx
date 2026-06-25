@@ -3,6 +3,7 @@ import { obtenerCategorias } from '../../services/categoria.service';
 import { obtenerTallas } from '../../services/talla.service';
 import { crearProducto, actualizarProducto } from '../../services/admin.service';
 import { subirImagen } from '../../services/upload.service';
+import styles from './ProductoForm.module.css';
 
 function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
   const [categorias, setCategorias] = useState([]);
@@ -49,39 +50,28 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   }
 
   function handleToggleTalla(tallaId) {
     setTallasSeleccionadas((prev) => {
       const copia = { ...prev };
-      if (copia[tallaId] !== undefined) {
-        delete copia[tallaId];
-      } else {
-        copia[tallaId] = 0;
-      }
+      if (copia[tallaId] !== undefined) delete copia[tallaId];
+      else copia[tallaId] = 0;
       return copia;
     });
   }
 
   function handleStockTalla(tallaId, stock) {
-    setTallasSeleccionadas((prev) => ({
-      ...prev,
-      [tallaId]: Number(stock),
-    }));
+    setTallasSeleccionadas((prev) => ({ ...prev, [tallaId]: Number(stock) }));
   }
 
   async function handleSubirImagen(e) {
     const archivo = e.target.files[0];
     if (!archivo) return;
-
     setPreviewImagen(URL.createObjectURL(archivo));
     setSubiendoImagen(true);
     setError('');
-
     try {
       const url = await subirImagen(archivo);
       setForm((prev) => ({ ...prev, imagenPrincipal: url }));
@@ -96,31 +86,23 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
-
     if (!form.nombre || !form.precio || !form.categoriaId) {
       setError('Nombre, precio y categoría son obligatorios');
       return;
     }
-
     setGuardando(true);
     try {
       const tallasArray = Object.entries(tallasSeleccionadas).map(
         ([tallaId, stock]) => ({ tallaId: Number(tallaId), stock })
       );
-
       const payload = {
         ...form,
         precio: Number(form.precio),
         categoriaId: Number(form.categoriaId),
         tallas: tallasArray,
       };
-
-      if (productoEditar) {
-        await actualizarProducto(productoEditar.id, payload);
-      } else {
-        await crearProducto(payload);
-      }
-
+      if (productoEditar) await actualizarProducto(productoEditar.id, payload);
+      else await crearProducto(payload);
       onGuardado();
     } catch (err) {
       console.error(err);
@@ -131,117 +113,56 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-800 p-6 rounded-xl space-y-4">
-      <h2 className="text-xl font-bold text-white">
-        {productoEditar ? 'Editar producto' : 'Nuevo producto'}
-      </h2>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <h2 className={styles.title}>{productoEditar ? 'Editar producto' : 'Nuevo producto'}</h2>
 
-      <div>
-        <label className="text-gray-300 text-sm block mb-1">Nombre</label>
-        <input
-          name="nombre"
-          value={form.nombre}
-          onChange={handleChange}
-          className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-orange-500"
-        />
+      <div className={styles.field}>
+        <label className={styles.label}>Nombre</label>
+        <input name="nombre" value={form.nombre} onChange={handleChange} className={styles.input} />
       </div>
 
-      <div>
-        <label className="text-gray-300 text-sm block mb-1">Descripción</label>
-        <textarea
-          name="descripcion"
-          value={form.descripcion}
-          onChange={handleChange}
-          rows={3}
-          className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-orange-500"
-        />
+      <div className={styles.field}>
+        <label className={styles.label}>Descripción</label>
+        <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows={3} className={styles.textarea} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className={`${styles.row2} ${styles.field}`}>
         <div>
-          <label className="text-gray-300 text-sm block mb-1">Precio (S/)</label>
-          <input
-            type="number"
-            step="0.01"
-            name="precio"
-            value={form.precio}
-            onChange={handleChange}
-            className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-orange-500"
-          />
+          <label className={styles.label}>Precio (S/)</label>
+          <input type="number" step="0.01" name="precio" value={form.precio} onChange={handleChange} className={styles.input} />
         </div>
-
         <div>
-          <label className="text-gray-300 text-sm block mb-1">Categoría</label>
-          <select
-            name="categoriaId"
-            value={form.categoriaId}
-            onChange={handleChange}
-            className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-orange-500"
-          >
+          <label className={styles.label}>Categoría</label>
+          <select name="categoriaId" value={form.categoriaId} onChange={handleChange} className={styles.select}>
             <option value="">Selecciona...</option>
             {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.nombre}
-              </option>
+              <option key={cat.id} value={cat.id}>{cat.nombre}</option>
             ))}
           </select>
         </div>
       </div>
 
-      <div>
-        <label className="text-gray-300 text-sm block mb-1">Imagen del producto</label>
-
-        {previewImagen && (
-          <img
-            src={previewImagen}
-            alt="preview"
-            className="w-32 h-32 object-cover rounded-lg mb-2 border border-gray-600"
-          />
-        )}
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleSubirImagen}
-          className="w-full bg-gray-700 text-gray-300 text-sm px-3 py-2 rounded-lg cursor-pointer file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-orange-500 file:text-white file:cursor-pointer"
-        />
-
-        {subiendoImagen && (
-          <p className="text-orange-400 text-sm mt-1">Subiendo imagen...</p>
-        )}
+      <div className={styles.field}>
+        <label className={styles.label}>Imagen del producto</label>
+        {previewImagen && <img src={previewImagen} alt="preview" className={styles.preview} />}
+        <input type="file" accept="image/*" onChange={handleSubirImagen} className={styles.fileInput} />
+        {subiendoImagen && <p className={styles.uploading}>Subiendo imagen...</p>}
       </div>
 
-      <div className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="destacado"
-          checked={form.destacado}
-          onChange={handleChange}
-          id="destacado"
-        />
-        <label htmlFor="destacado" className="text-gray-300 text-sm">
-          Producto destacado
-        </label>
+      <div className={`${styles.checkboxRow} ${styles.field}`}>
+        <input type="checkbox" name="destacado" checked={form.destacado} onChange={handleChange} id="destacado" />
+        <label htmlFor="destacado" className={styles.checkboxLabel}>Producto destacado</label>
       </div>
 
-      <div>
-        <label className="text-gray-300 text-sm block mb-2">Tallas y stock</label>
-        <div className="grid grid-cols-3 gap-2">
+      <div className={styles.field}>
+        <label className={styles.label}>Tallas y stock</label>
+        <div className={styles.tallasGrid}>
           {tallasDisponibles.map((talla) => {
             const activa = tallasSeleccionadas[talla.id] !== undefined;
             return (
-              <div
-                key={talla.id}
-                className={`border rounded-lg p-2 ${
-                  activa ? 'border-orange-500 bg-gray-700' : 'border-gray-600'
-                }`}
-              >
-                <label className="flex items-center gap-2 text-sm text-gray-200">
-                  <input
-                    type="checkbox"
-                    checked={activa}
-                    onChange={() => handleToggleTalla(talla.id)}
-                  />
+              <div key={talla.id} className={`${styles.tallaBox} ${activa ? styles.tallaBoxActive : ''}`}>
+                <label className={styles.tallaCheckLabel}>
+                  <input type="checkbox" checked={activa} onChange={() => handleToggleTalla(talla.id)} />
                   {talla.valor}
                 </label>
                 {activa && (
@@ -250,7 +171,7 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
                     placeholder="Stock"
                     value={tallasSeleccionadas[talla.id]}
                     onChange={(e) => handleStockTalla(talla.id, e.target.value)}
-                    className="w-full mt-1 bg-gray-600 text-white px-2 py-1 rounded text-sm"
+                    className={styles.stockInput}
                   />
                 )}
               </div>
@@ -259,23 +180,13 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
         </div>
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
 
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          disabled={guardando}
-          className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-2 rounded-lg"
-        >
+      <div className={styles.actions}>
+        <button type="submit" disabled={guardando} className={styles.submit}>
           {guardando ? 'Guardando...' : 'Guardar producto'}
         </button>
-        <button
-          type="button"
-          onClick={onCancelar}
-          className="px-4 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
-        >
-          Cancelar
-        </button>
+        <button type="button" onClick={onCancelar} className={styles.cancel}>Cancelar</button>
       </div>
     </form>
   );

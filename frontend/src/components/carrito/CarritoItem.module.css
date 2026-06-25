@@ -1,0 +1,71 @@
+.item {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.image {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.info {
+  flex: 1;
+}
+
+.name {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+}
+
+.talla {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 0.2rem 0 0.4rem;
+}
+
+.price {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+}
+
+.qtyRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.qtyBtn {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--color-line);
+  font-size: 0.75rem;
+  color: var(--color-ink);
+}
+
+.qtyValue {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+}
+
+.remove {
+  align-self: flex-start;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: var(--tracking-wide);
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.remove:hover {
+  color: #8a1f1f;
+}

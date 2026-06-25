@@ -1,0 +1,66 @@
+.hero {
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.55);
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2.75rem, 9vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.titleItalic {
+  font-style: italic;
+  font-weight: 300;
+}
+
+.divider {
+  width: 1px;
+  height: 3rem;
+  background-color: rgba(0, 0, 0, 0.25);
+  margin: 2rem 0;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-weight: 300;
+  letter-spacing: var(--tracking-wide);
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.65);
+  max-width: 26rem;
+  margin-bottom: 2.5rem;
+}
+
+.cta {
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+  padding: 1rem 2.25rem;
+  transition: opacity 0.2s ease;
+}
+
+.cta:hover {
+  opacity: 0.78;
+}
