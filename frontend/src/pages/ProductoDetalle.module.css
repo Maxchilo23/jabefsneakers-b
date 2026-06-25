@@ -167,3 +167,34 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.imageWrap {
+  cursor: zoom-in;
+}
+
+.thumbsRow {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  overflow-x: auto;
+}
+
+.thumb {
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border: 1px solid var(--color-line);
+  opacity: 0.55;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.thumbActiva {
+  opacity: 1;
+  border-color: var(--color-ink);
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

@@ -4,6 +4,7 @@ import { obtenerProductoPorId } from '../services/producto.service';
 import { formatearPrecio } from '../utils/formatearPrecio';
 import useCarritoStore from '../store/carritoStore';
 import Loader from '../components/ui/Loader';
+import Lightbox from '../components/catalogo/Lightbox';
 import styles from './ProductoDetalle.module.css';
 
 function ProductoDetalle() {
@@ -15,12 +16,18 @@ function ProductoDetalle() {
   const [cantidad, setCantidad] = useState(1);
   const [mensaje, setMensaje] = useState('');
 
+  const [imagenActiva, setImagenActiva] = useState(0);
+  const [lightboxAbierto, setLightboxAbierto] = useState(false);
+
   const agregarItem = useCarritoStore((state) => state.agregarItem);
 
   useEffect(() => {
     setCargando(true);
     obtenerProductoPorId(id)
-      .then(setProducto)
+      .then((data) => {
+        setProducto(data);
+        setImagenActiva(0);
+      })
       .catch(console.error)
       .finally(() => setCargando(false));
   }, [id]);
@@ -38,6 +45,16 @@ function ProductoDetalle() {
   if (cargando) return <Loader texto="Cargando producto..." />;
   if (!producto) return <p className={styles.description}>Producto no encontrado.</p>;
 
+  // Construimos el array de todas las imágenes: principal + galería
+  const imagenes = [
+    producto.imagenPrincipal,
+    ...(producto.imagenes?.map((img) => img.url) || []),
+  ].filter(Boolean);
+
+  if (imagenes.length === 0) {
+    imagenes.push('https://via.placeholder.com/500');
+  }
+
   return (
     <div className={styles.page}>
       <button onClick={() => navigate(-1)} className={styles.back}>
@@ -45,12 +62,31 @@ function ProductoDetalle() {
       </button>
 
       <div className={styles.grid}>
-        <div className={styles.imageWrap}>
-          <img
-            src={producto.imagenPrincipal || 'https://via.placeholder.com/500'}
-            alt={producto.nombre}
-            className={styles.image}
-          />
+        <div>
+          <div
+            className={styles.imageWrap}
+            onClick={() => setLightboxAbierto(true)}
+          >
+            <img
+              src={imagenes[imagenActiva]}
+              alt={producto.nombre}
+              className={styles.image}
+            />
+          </div>
+
+          {imagenes.length > 1 && (
+            <div className={styles.thumbsRow}>
+              {imagenes.map((url, i) => (
+                <button
+                  key={i}
+                  onClick={() => setImagenActiva(i)}
+                  className={`${styles.thumb} ${i === imagenActiva ? styles.thumbActiva : ''}`}
+                >
+                  <img src={url} alt={`Vista ${i + 1}`} className={styles.thumbImg} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
@@ -100,6 +136,15 @@ function ProductoDetalle() {
           {mensaje && <p className={styles.feedback}>{mensaje}</p>}
         </div>
       </div>
+
+      {lightboxAbierto && (
+        <Lightbox
+          imagenes={imagenes}
+          indiceActivo={imagenActiva}
+          onCerrar={() => setLightboxAbierto(false)}
+          onCambiarIndice={setImagenActiva}
+        />
+      )}
     </div>
   );
 }

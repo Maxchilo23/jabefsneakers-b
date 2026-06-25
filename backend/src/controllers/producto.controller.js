@@ -131,7 +131,13 @@ async function actualizar(req, res, next) {
       imagenPrincipal,
       destacado,
       activo,
+      imagenesAdicionales, // ["url1", "url2", ...]
     } = req.body;
+
+    // Si llegan imágenes adicionales, borramos las viejas y creamos las nuevas
+    if (imagenesAdicionales) {
+      await prisma.productoImagen.deleteMany({ where: { productoId: Number(id) } });
+    }
 
     const producto = await prisma.producto.update({
       where: { id: Number(id) },
@@ -144,6 +150,9 @@ async function actualizar(req, res, next) {
         imagenPrincipal,
         destacado,
         activo,
+        imagenes: imagenesAdicionales
+          ? { create: imagenesAdicionales.map((url) => ({ url })) }
+          : undefined,
       },
       include: {
         categoria: true,

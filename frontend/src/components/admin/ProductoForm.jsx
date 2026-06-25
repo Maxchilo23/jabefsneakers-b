@@ -14,6 +14,10 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
   const [subiendoImagen, setSubiendoImagen] = useState(false);
   const [previewImagen, setPreviewImagen] = useState('');
 
+  // Imágenes adicionales (galería)
+  const [imagenesGaleria, setImagenesGaleria] = useState([]); // array de URLs
+  const [subiendoGaleria, setSubiendoGaleria] = useState(false);
+
   const [form, setForm] = useState({
     nombre: '',
     descripcion: '',
@@ -39,6 +43,7 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
         destacado: productoEditar.destacado || false,
       });
       setPreviewImagen(productoEditar.imagenPrincipal || '');
+      setImagenesGaleria(productoEditar.imagenes?.map((img) => img.url) || []);
 
       const tallasMap = {};
       productoEditar.tallas?.forEach((pt) => {
@@ -77,10 +82,34 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
       setForm((prev) => ({ ...prev, imagenPrincipal: url }));
     } catch (err) {
       console.error(err);
-      setError('Error al subir la imagen');
+      setError('Error al subir la imagen principal');
     } finally {
       setSubiendoImagen(false);
     }
+  }
+
+  // Subir varias imágenes a la galería (acepta selección múltiple)
+  async function handleSubirGaleria(e) {
+    const archivos = Array.from(e.target.files);
+    if (archivos.length === 0) return;
+
+    setSubiendoGaleria(true);
+    setError('');
+
+    try {
+      const urls = await Promise.all(archivos.map((archivo) => subirImagen(archivo)));
+      setImagenesGaleria((prev) => [...prev, ...urls]);
+    } catch (err) {
+      console.error(err);
+      setError('Error al subir alguna imagen de la galería');
+    } finally {
+      setSubiendoGaleria(false);
+      e.target.value = ''; // permite volver a seleccionar los mismos archivos si hace falta
+    }
+  }
+
+  function handleQuitarImagenGaleria(index) {
+    setImagenesGaleria((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleSubmit(e) {
@@ -100,6 +129,7 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
         precio: Number(form.precio),
         categoriaId: Number(form.categoriaId),
         tallas: tallasArray,
+        imagenesAdicionales: imagenesGaleria,
       };
       if (productoEditar) await actualizarProducto(productoEditar.id, payload);
       else await crearProducto(payload);
@@ -143,10 +173,40 @@ function ProductoForm({ productoEditar, onGuardado, onCancelar }) {
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>Imagen del producto</label>
+        <label className={styles.label}>Imagen principal</label>
         {previewImagen && <img src={previewImagen} alt="preview" className={styles.preview} />}
         <input type="file" accept="image/*" onChange={handleSubirImagen} className={styles.fileInput} />
         {subiendoImagen && <p className={styles.uploading}>Subiendo imagen...</p>}
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.label}>Galería (otros ángulos)</label>
+
+        {imagenesGaleria.length > 0 && (
+          <div className={styles.galeriaGrid}>
+            {imagenesGaleria.map((url, i) => (
+              <div key={i} className={styles.galeriaItem}>
+                <img src={url} alt={`vista ${i + 1}`} className={styles.galeriaImg} />
+                <button
+                  type="button"
+                  onClick={() => handleQuitarImagenGaleria(i)}
+                  className={styles.galeriaRemove}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleSubirGaleria}
+          className={styles.fileInput}
+        />
+        {subiendoGaleria && <p className={styles.uploading}>Subiendo imágenes...</p>}
       </div>
 
       <div className={`${styles.checkboxRow} ${styles.field}`}>

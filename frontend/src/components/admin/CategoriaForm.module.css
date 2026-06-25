@@ -48,3 +48,40 @@
   font-size: 0.75rem;
   color: #8a1f1f;
 }
+
+.galeriaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.galeriaItem {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.galeriaImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--color-line);
+}
+
+.galeriaRemove {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .galeriaGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
