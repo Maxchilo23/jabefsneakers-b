@@ -7,7 +7,7 @@
   "dev": "nodemon src/server.js",
   "start": "node src/server.js",
   "seed": "node prisma/seed.js",
-  "postinstall": "prisma generate"
+  "seed:productos": "node prisma/seedProductos.js"
 },
   "keywords": [],
   "author": "",
